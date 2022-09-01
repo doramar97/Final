@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
 
+
 jobs:
 
   build:
@@ -14,6 +15,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      working-directory: webapp
-      run: docker build . --tag webapp:$(date +%s)
+    
+    
+    - name: Login to Amazon ECR Public
+      id: login-ecr-public
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registry-type: public
+    
+    - name: Build, tag, and push docker image to Amazon ECR Public
+      run: |
+        docker build -t webapp .
+        docker tag webapp:latest public.ecr.aws/a4h1f3t0/webapp:latest
+        docker push public.ecr.aws/a4h1f3t0/webapp:latest
+      
+      
