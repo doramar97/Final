@@ -10,28 +10,24 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::123456789012:role/my-github-actions-role
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
-    
-    - name: Login to Amazon ECR Public
-      id: login-ecr-public
+
+    - name: Login to Amazon ECR Private
+      id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
-      with:
-        registry-type: public
     
-    - name: Build, tag, and push docker image to Amazon ECR Public
+    - name: Build and Push
       run: |
         docker build -t webapp .
-        docker tag webapp:latest public.ecr.aws/a4h1f3t0/webapp:latest
-        docker push public.ecr.aws/a4h1f3t0/webapp:latest
-      
+        docker tag webapp:latest 116313440999.dkr.ecr.eu-west-1.amazonaws.com/webapp:latest
+        docker push 116313440999.dkr.ecr.eu-west-1.amazonaws.com/webapp:latest
       
